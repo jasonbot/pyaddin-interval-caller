@@ -56,7 +56,7 @@ class CallQueue(object):
         self._flush()
 
         need_update = False
-        assert delay_in_seconds >= 1, \
+        assert delay_in_seconds >= 0.001, \
                "Delay of {} seconds is not valid".format(delay_in_seconds)
         later = time.time() + delay_in_seconds
         if not self._queued_functions:
