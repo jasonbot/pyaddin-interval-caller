@@ -5,9 +5,10 @@ import sys
 import pythonaddins
 
 class StreamWrapper(object):
-    def __init__(self, original):
+    def __init__(self, original, stderr=False):
         self._original = original
         self._buffer = u""
+        self._stderr = stderr
     def write(self, *args, **kwargs):
         try:
             self._buffer += u' '.join(a.decode("utf-8", "replace")
@@ -19,7 +20,10 @@ class StreamWrapper(object):
         if '\n' in self._buffer:
             outstring, self._buffer = self._buffer.rsplit('\n', 1)
             try:
-                pythonaddins._WriteStringToPythonWindow(outstring)
+                outstring = (outstring.replace('\r\n', '\n')
+                                      .replace('\n', '\r\n'))
+                pythonaddins._WriteStringToPythonWindow(outstring,
+                                                        is_error=self._stderr)
             except:
                 return self._original.write(*args, **kwargs)
     def finalize(self):
@@ -34,7 +38,7 @@ class StreamWrapperContextManager(object):
         self._stdout = sys.stdout
         self._stderr = sys.stderr
         sys.stdout = StreamWrapper(sys.stdout)
-        sys.stderr = StreamWrapper(sys.stderr)
+        sys.stderr = StreamWrapper(sys.stderr, True)
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout.finalize()
         sys.stderr.finalize()
