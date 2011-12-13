@@ -6,4 +6,4 @@
    Use:
    
    import desktopuisupport.tk
-   import desktopuisupport.wx"""
+   import desktopuisupport.wxpython"""
