@@ -49,7 +49,7 @@ class StreamWrapperContextManager(object):
         sys.stderr = StreamWrapper(sys.stderr, True)
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout.finalize()
-        sys.stderr.finalize(True)
+        sys.stderr.finalize(sys.stdout or sys.stderr)
         sys.stdout = self._stdout
         sys.stderr = self._stderr
 
