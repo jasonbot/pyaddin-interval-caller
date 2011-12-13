@@ -2,7 +2,7 @@ import call_later
 import wx
 
 class WXEventLoop(object):
-    _interval = 0.125
+    _interval = 0.05
     def __init__(self):
         self._running = False
         self._oldloop = None

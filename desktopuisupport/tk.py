@@ -4,7 +4,7 @@ import Tkinter
 import pythonaddins
 
 class TKEventLoop(object):
-    _interval = 0.125
+    _interval = 0.05
     def __init__(self):
         self._running = False
         self.start()
