@@ -38,10 +38,12 @@ WM_TIMER = 0x0113
 class CallQueue(object):
     """Represents a queue of function calls that will be executed in this
        thread's Win32 message loop."""
+    _fraction = 2 # Accurate to 10**_fraction of a second
     def __init__(self):
         self._queued_functions = collections.defaultdict(list)
         self._call_later_callback = callback_type(self._callback_handler)
         self._timerid = None
+        self._cancel_list = set()
     def call_later(self, callable, delay_in_seconds=1):
         """Allows a callable object to be executed later in a Windows
            application.
@@ -58,71 +60,67 @@ class CallQueue(object):
         need_update = False
         assert delay_in_seconds >= 0.001, \
                "Delay of {} seconds is not valid".format(delay_in_seconds)
-        later = time.time() + delay_in_seconds
+        later = round(time.time() + delay_in_seconds, self._fraction)
         if not self._queued_functions:
             need_update = True
-        elif later <= int(min(self._queued_functions)):
+        elif later <= min(map(float, self._queued_functions)):
             need_update = True
         if isinstance(callable, (list, tuple)):
             for c in callable:
-                self._queued_functions[later].append(c)
+                self._queued_functions[str(later)].append(c)
         else:
-            self._queued_functions[later].append(callable)
-        #printfunc("Queued funtion {} and I am {}"
-        #          .format(callable, self._queued_functions))
+            self._queued_functions[str(later)].append(callable)
+        printfunc("Queued function {} and I am {}"
+                  .format(callable, self._queued_functions))
         if need_update:
             self._update()
         return id(callable)
     def cancel_call(self, function_id):
         """Cancels all outstanding scheduled calls to the provided function id
            as returned from call_later"""
-        keys_to_kill = [k for k in self._queued_functions 
-                        if id(id) in map(self._queued_functions[k])]
-        for key in keys_to_kill:
-            self._queued_functions[key] = [item
-                                           for item in 
-                                             self._queued_functions[key]
-                                           if id(item) != function_id]
-        if keys_to_kill:
-            self._update()
+        if not isinstance(function_id, (int, long)):
+            function_id = id(function_id)
+        self._cancel_list.add(function_id)
     def _update(self):
-        #printfunc("Updating")
+        printfunc("Updating")
         if self._queued_functions:
             if min(self._queued_functions) < time.time():
-                self._flush(time.time(), False)
+                self._flush(False)
             if self._queued_functions:
-                mt = min(self._queued_functions)
-                # +10 mS fudge factor
-                callback_time = max([20,
-                                     int(((mt - time.time()) * 1000) + 10)])
-                #printfunc("Need update! Setting timer for {} ms ({})"
-                #          .format(callback_time, mt))
+                mt = min(map(float, self._queued_functions))
+                callback_time = max([((mt - time.time()) * 1000) + 10,
+                                     10])
+                printfunc("Need update! Setting timer for {} ms ({})"
+                          .format(callback_time, mt))
                 self._timerid = settimer(0, # NULL HWND
                                          self._timerid,
-                                         callback_time,
+                                         int(callback_time),
                                          self._call_later_callback)
         if not self._queued_functions:
             killtimer(0, self._timerid)
     def _callback_handler(self, hwnd, uMsg, idEvent, dwTime):
-        #printfunc("Calling WM_TIMER callback {}, {}, {}, {}"
-        #          .format(hwnd, uMsg, idEvent, dwTime))
+        printfunc("Calling WM_TIMER callback {}, {}, {}, {}"
+                  .format(hwnd, uMsg, idEvent, dwTime))
         try:
-            now = int(time.time())
-            self._flush(now, True)
+            self._flush(True)
         except Exception as e:
             printfunc(traceback.format_exc().rstrip(), True)
-    def _flush(self, flush_time=None, update=True):
-        if flush_time is None:
-            flush_time = int(time.time())
-        keys = [t for t in self._queued_functions if t <= flush_time]
-        #printfunc("Flushing keys: {}".format(keys))
-        for key in keys:
+    def _flush(self, update=True):
+        flush_time = round(time.time(), self._fraction)
+        keys = set(t for t in self._queued_functions
+                   if float(t) <= flush_time)
+        printfunc("Flushing keys: {}".format(keys))
+        for key in sorted(keys):
             for fn in self._queued_functions[key]:
-                #printfunc("Calling {}".format(fn))
+                printfunc("Calling {} - {}".format(key, fn))
                 try:
-                    fn()
+                    if id(fn) in self._cancel_list:
+                        self._cancel_list.remove(id(fn))
+                    else:
+                        fn()
                 except Exception as e:
                     printfunc(traceback.format_exc().rstrip(), True)
+        for key in keys:
             del self._queued_functions[key]
         if update:
             self._update()
