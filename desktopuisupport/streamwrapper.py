@@ -48,10 +48,8 @@ class StreamWrapperContextManager(object):
         sys.stdout = StreamWrapper(sys.stdout)
         sys.stderr = StreamWrapper(sys.stderr, True)
     def __exit__(self, exc_type, exc_val, exc_tb):
-        sobuffer = bool(sys.stdout)
-        sebuffer = bool(sys.stderr)
-        sys.stdout.finalize(sobuffer and not sebuffer)
-        sys.stderr.finalize(not sobuffer)
+        sys.stdout.finalize()
+        sys.stderr.finalize(True)
         sys.stdout = self._stdout
         sys.stderr = self._stderr
 
