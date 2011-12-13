@@ -4,6 +4,8 @@ import ctypes.wintypes
 import time
 import traceback
 
+import streamwrapper
+
 try:
     import pythonaddins
     pythonaddins._WriteStringToPythonWindow("", False, True, False)
@@ -86,16 +88,17 @@ class CallQueue(object):
                    if float(t) <= flush_time)
         #printfunc("Flushing keys: {}".format(keys))
         for key in sorted(keys):
-            for fn in self._queued_functions[key]:
-                #printfunc("Calling {} - {}".format(key, fn))
-                try:
-                    if id(fn) in self._cancel_list:
-                        self._cancel_list.remove(id(fn))
-                    else:
-                        fn()
-                except Exception as e:
-                    #pass
-                    printfunc(traceback.format_exc().rstrip(), True)
+            with streamwrapper.wrapped_streams:
+                for fn in self._queued_functions[key]:
+                    #printfunc("Calling {} - {}".format(key, fn))
+                    try:
+                        if id(fn) in self._cancel_list:
+                            self._cancel_list.remove(id(fn))
+                        else:
+                            fn()
+                    except Exception as e:
+                        #pass
+                        printfunc(traceback.format_exc().rstrip(), True)
         for key in keys:
             del self._queued_functions[key]
 
