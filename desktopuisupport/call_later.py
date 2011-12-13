@@ -8,9 +8,11 @@ import streamwrapper
 
 try:
     import pythonaddins
-    pythonaddins._WriteStringToPythonWindow("", False, True, False)
     def printfunc(message, error=False):
-        pythonaddins._WriteStringToPythonWindow(message, True, True, error)
+        try:
+            pythonaddins._WriteStringToPythonWindow(message, True, True, error)
+        except:
+            print message
 except:
     def printfunc(message, error=False):
         print message
