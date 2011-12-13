@@ -4,7 +4,7 @@ import Tkinter
 import pythonaddins
 
 class TKEventLoop(object):
-    _interval = 1
+    _interval = 0.125
     def __init__(self):
         self._running = False
         self.start()
@@ -14,9 +14,8 @@ class TKEventLoop(object):
     def stop(self):
         self._running = False
     def tick(self):
-        #while Tkinter.tkinter.dooneevent(Tkinter.tkinter.DONT_WAIT):
-        #    pass
-        pythonaddins._WriteStringToPythonWindow("Tick {}, {}".format(self._running, self._interval))
+        while Tkinter.tkinter.dooneevent(Tkinter.tkinter.DONT_WAIT):
+            pass
         if self._running:
             call_later.call_later(self.tick, self._interval)
 
