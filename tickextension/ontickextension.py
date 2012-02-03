@@ -7,9 +7,16 @@ class TickExtension(object):
     def onTimer(self):
         "Override this method in your extension class"
         pass
+    def startup(self):
+        self.startTimer()
+    def startTimer(self):
+        if getattr(self, 'interval', None):
+            call_later.call_later(self._tick, self.interval)
+        else:
+            call_later.cancel_call(self._tick)
     def _tick(self):
         try:
             self.onTimer()
         finally:
-            if self.active:
+            if getattr(self, 'enabled', False) and getattr(self, 'interval', None):
                 call_later.call_later(self._tick, self.interval)
