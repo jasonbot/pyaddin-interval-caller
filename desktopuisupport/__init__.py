@@ -1,9 +1,3 @@
-"""Imports event loop support for Tkinter and wxPython within Arc*.exe
-   for desktop plugins.
-   
-   You only need to import either module once.
-   
-   Use:
-   
-   import desktopuisupport.tk
-   import desktopuisupport.wxpython"""
+"""Implementes an extension that can have an onTimer() method."""
+
+from ontickextension import TickExtension
