@@ -1,7 +1,7 @@
 Interval-Callable ArcGIS Extension
 ==================================
 
-This library extends your `Extension` classes in ArcGIS Add-Ins (in Python) to have a `onTimer()` event, which is called at custom intervals.
+This library extends your `Extension` classes in ArcGIS Add-Ins (in Python) to have a `onTimer()` event, which is called at configurable intervals.
 
 Installing
 ----------
@@ -15,7 +15,7 @@ Or copy into your Add-In's `Install\` folder.
 Using this Dingus
 -----------------
 
-Make an extension class. Import `tickextension` near the top of your `Whatever_addin.py` file. If you opted for the copy-into-`Install\` option over using `setup.py`,  you'll do it like this:
+Make an python add-in with at least one extension class. Import `tickextension` near the top of your `Whatever_addin.py` file. If you opted for the copy-into-`Install\` option over using `setup.py`,  you'll do it like this:
 
     import imp
     import os
