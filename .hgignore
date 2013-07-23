@@ -1,4 +1,0 @@
-glob:build\*
-glob:dist\*
-glob:*.*~
-glob:*.swp
