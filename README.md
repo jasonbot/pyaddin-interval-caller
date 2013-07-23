@@ -8,9 +8,9 @@ Installing
 
 Install locally on your machine using setup.py:
 
-    C:\gitprojects\tickextension> C:\Python27\ArcGIS10.2\Python setup.py install
+    C:\gitprojects\pyaddin-interval-caller> C:\Python27\ArcGIS10.2\Python setup.py install
 
-Or copy into your Add-In's `Install\` folder.
+Or copy the `tickextension` folder into your Add-In's `Install\` folder.
 
 Using this Dingus
 -----------------
