@@ -2,7 +2,15 @@ __all__ = ['wrapped_streams']
 
 import sys
 
-import pythonaddins
+try:
+    import pythonaddins
+except ImportError:
+    class pythonaddins(object):
+        @staticmethod
+        def _WriteStringToPythonWindow(out_string,
+                                       reprompt_when_done=True,
+                                       is_error=False):
+            pass
 
 class StreamWrapper(object):
     def __init__(self, original, stderr=False):
