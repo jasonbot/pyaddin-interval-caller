@@ -115,4 +115,3 @@ class CallQueue(object):
 
 call_queue = CallQueue()
 call_later = call_queue.call_later
-cancel_call = call_queue.cancel_call
