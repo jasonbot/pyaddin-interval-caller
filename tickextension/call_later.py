@@ -48,19 +48,32 @@ class CallQueue(object):
         self._call_later_callback = callback_type(self._callback_handler)
         self._timerid = None
         self._cancel_list = set()
-        self._timerid = settimer(0, # NULL HWND
-                                 self._timerid,
-                                 int(10**-self._fraction * 1000),
-                                 self._call_later_callback)
+        self._active = False
+    @property
+    def active(self):
+        return self._active
+    @active.setter
+    def active(self, val):
+        if val and not self._active:
+            self._timerid = settimer(0, # NULL HWND
+                                     self._timerid,
+                                     int(10**-self._fraction * 1000),
+                                     self._call_later_callback)
+            self._active = True
+            return
+        elif (not val) and self._active:
+            self._active = (killtimer(0, self._timerid) != 0)
+            return
+        self._active = bool(val)
     def call_later(self, callable, delay_in_seconds=1):
         """Allows a callable object to be executed later in a Windows
            application.
-           
+
            Example:
-               
+
            def update():
                print 'Hello!'
-           
+
            call_later.call_later(update, 10) # Will print "Hello!" in 10 sec
         """
         later = round(time.time() + delay_in_seconds, self._fraction)
@@ -69,6 +82,7 @@ class CallQueue(object):
                 self._queued_functions[str(later)].append(c)
         else:
             self._queued_functions[str(later)].append(callable)
+        self.active = True
         return id(callable)
     def cancel_call(self, function_id):
         """Cancels all outstanding scheduled calls to the provided function id
@@ -103,6 +117,8 @@ class CallQueue(object):
                         printfunc(traceback.format_exc().rstrip(), True)
         for key in keys:
             del self._queued_functions[key]
+        if not self._queued_functions:
+            self.active = False
 
 call_queue = CallQueue()
 call_later = call_queue.call_later
