@@ -17,7 +17,7 @@ except:
     def printfunc(message, error=False):
         print message
 
-__all__ = ['call_later', 'cancel_call']
+__all__ = ['call_later']
 
 callback_type = ctypes.WINFUNCTYPE(None,
                                    ctypes.wintypes.HWND,
