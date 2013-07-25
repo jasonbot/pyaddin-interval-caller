@@ -47,7 +47,6 @@ class CallQueue(object):
         self._queued_functions = collections.defaultdict(list)
         self._call_later_callback = callback_type(self._callback_handler)
         self._timerid = None
-        self._cancel_list = set()
         self._active = False
     @property
     def active(self):
@@ -84,12 +83,6 @@ class CallQueue(object):
             self._queued_functions[str(later)].append(callable)
         self.active = True
         return id(callable)
-    def cancel_call(self, function_id):
-        """Cancels all outstanding scheduled calls to the provided function id
-           as returned from call_later"""
-        if not isinstance(function_id, (int, long)):
-            function_id = id(function_id)
-        self._cancel_list.add(function_id)
     def _callback_handler(self, hwnd, uMsg, idEvent, dwTime):
         #printfunc("Calling WM_TIMER callback {}, {}, {}, {}"
         #          .format(hwnd, uMsg, idEvent, dwTime))
