@@ -56,7 +56,7 @@ Be careful, try to follow the simple built-in enabled/disabled workflow if you c
 How It Works
 ------------
 
-Win32. Injecting a timer event into `Arc*.exe`'s Windows event loop via [`::SetTimer`](http://msdn.microsoft.com/en-us/library/windows/desktop/ms644906(v=vs.85).aspx). Check out the `CallQueue` class in `call_later.py` for all the gory, pedantic, confusing details. You could also take that class to do other horrible timer-based ugliness in Python in `Arc*.exe` for your own amusement/profit.
+Win32. Injecting a timer event into `Arc*.exe`'s Windows event loop via [`::SetTimer`](http://msdn.microsoft.com/en-us/library/windows/desktop/ms644906%28v=vs.85%29.aspx). Check out the `CallQueue` class in `call_later.py` for all the gory, pedantic, confusing details. You could also take that class to do other horrible timer-based ugliness in Python in `Arc*.exe` for your own amusement/profit.
 
 License
 -------
