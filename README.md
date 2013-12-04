@@ -46,7 +46,7 @@ Here is a visual example of what you'll need to do:
             self.interval = 0.5 # Call every half second
         def startup(self):
             super(self.__class__, self).startup()
-        def onInterval(self):
+        def onTimer(self):
             print "Tick"
 
 The timer will turn itself off automatically when the extension is disabled. To turn it off manually, `del self.interval`. No interval set = no interval calls. If you wish to start it up again, set `self.interval` to a valid interval again and call `self.startTimer()`.
