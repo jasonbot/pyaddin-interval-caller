@@ -42,7 +42,7 @@ WM_TIMER = 0x0113
 class CallQueue(object):
     """Represents a queue of function calls that will be executed in this
        thread's Win32 message loop."""
-    _fraction = 1 # Accurate to 10**_fraction of a second
+    _fraction = 1 # Accurate to 1/(10**fraction) of a second
     def __init__(self):
         self._queued_functions = collections.defaultdict(list)
         self._call_later_callback = callback_type(self._callback_handler)
@@ -84,29 +84,20 @@ class CallQueue(object):
         self.active = True
         return id(callable)
     def _callback_handler(self, hwnd, uMsg, idEvent, dwTime):
-        #printfunc("Calling WM_TIMER callback {}, {}, {}, {}"
-        #          .format(hwnd, uMsg, idEvent, dwTime))
         try:
             self._flush(True)
         except Exception as e:
-            # printfunc(traceback.format_exc().rstrip(), True)
             pass
     def _flush(self, update=True):
         flush_time = round(time.time(), self._fraction)
         keys = set(t for t in self._queued_functions
                    if float(t) <= flush_time)
-        #printfunc("Flushing keys: {}".format(keys))
         for key in sorted(keys):
             with streamwrapper.wrapped_streams:
                 for fn in self._queued_functions[key]:
-                    #printfunc("Calling {} - {}".format(key, fn))
                     try:
-                        if id(fn) in self._cancel_list:
-                            self._cancel_list.remove(id(fn))
-                        else:
-                            fn()
+                        fn()
                     except Exception as e:
-                        #pass
                         printfunc(traceback.format_exc().rstrip(), True)
         for key in keys:
             del self._queued_functions[key]
