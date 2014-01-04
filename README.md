@@ -45,7 +45,7 @@ Here is a visual example of what you'll need to do:
         def __init__(self):
             self.interval = 0.5 # Call every half second
         def startup(self):
-            super(self.__class__, self).startup()
+            super(MyNewAndShinyExtensionClass, self).startup()
         def onTimer(self):
             print "Tick"
 
