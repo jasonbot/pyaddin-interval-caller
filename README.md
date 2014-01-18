@@ -1,7 +1,7 @@
 Interval-Callable ArcGIS Extension
 ==================================
 
-This library extends your [`Extension`](http://resources.arcgis.com/en/help/main/10.2/index.html#/application_extension/014p00000018000000/) classes in ArcGIS Add-Ins (in Python) to have a `onTimer()` event, which is called at configurable intervals.
+This library extends your [`Extension`](http://resources.arcgis.com/en/help/main/10.2/index.html#/application_extension/014p00000018000000/) classes in ArcGIS Add-Ins (in Python) to have an `onTimer()` event, which is called at configurable intervals.
 
 Installing
 ----------
