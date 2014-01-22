@@ -20,10 +20,11 @@ class TKInterLoop(TickExtension):
             self._tkinter = _tkinter
         start_time = time.time()
         for event_to_handle in xrange(20):
-            ret_val = _tkinter.dooneevent(TCL_DONT_WAIT)
+            ret_val = self._tkinter.dooneevent(TCL_DONT_WAIT)
             if ret_val == 0:
                 # A return value of 0 means no event was queued for handling,
                 # giving us an opportunity to stop handling events for now
+                # since the event queue has been exhausted
                 return
             elif (time.time() - start_time) > (self.interval * 0.95):
                 # Take a breath if we've spent a long time processing events
