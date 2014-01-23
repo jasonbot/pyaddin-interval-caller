@@ -3,7 +3,7 @@ __all__ = ['TKInterLoop']
 
 import time
 
-from tickextension.ontickextension import TickExtension
+from ontickextension import TickExtension
 
 TCL_DONT_WAIT = (1 << 1) # From `tcl.h`
 

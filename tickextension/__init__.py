@@ -2,5 +2,5 @@
 
 __all__ = ['TickExtension', 'TKInterLoop']
 
-from tickextension.ontickextension import TickExtension
-from tickextension.tkinterloop import TKInterLoop
+from ontickextension import TickExtension
+from tkinterloop import TKInterLoop
