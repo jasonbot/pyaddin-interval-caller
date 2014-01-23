@@ -20,8 +20,8 @@ Make an python add-in with at least one extension class. Import `tickextension` 
     import imp
     import os
     tickextension_info = imp.find_module('tickextension',
-                                         os.path.dirname(
-                                            os.path.abspath(__file__)))
+                                         [os.path.dirname(
+                                             os.path.abspath(__file__))])
     tickextension = imp.load_module('tickextension', *tickextension_info)
 
 If you did the setup.py it's just `import tickextension` like always.
@@ -38,8 +38,8 @@ Here is a visual example of what you'll need to do:
     import imp
     import os
     tickextension_info = imp.find_module('tickextension',
-                                         os.path.dirname(
-                                            os.path.abspath(__file__)))
+                                         [os.path.dirname(
+                                             os.path.abspath(__file__))])
     tickextension = imp.load_module('tickextension', *tickextension_info)
     
     import arcpy
