@@ -13,8 +13,8 @@ except ImportError:
             pass
 
 class StreamWrapper(object):
-    def __init__(self, original, stderr=False):
-        self._original = original
+    def __init__(self, wrapped_stream, stderr=False):
+        self._wrapped_stream = wrapped_stream
         self._buffer = u""
         self._stderr = stderr
         self._reprompt = False
@@ -38,16 +38,27 @@ class StreamWrapper(object):
                                              reprompt_when_done=self._reprompt,
                                              is_error=self._stderr)
             except:
-                return self._original.write(*args, **kwargs)
+                return self._wrapped_stream.write(*args, **kwargs)
+    def flush(self):
+        self._wrapped_stream.flush()
     def finalize(self, reprompt=False):
         self._reprompt = reprompt
-        if self._buffer or reprompt:
-            self.write('\n')
-    def __bool__(self):
+        if self._buffer and isinstance(self._buffeer, unicode):
+            pythonaddins._WriteStringToPythonWindow(self._buffer,
+                                         reprompt_when_done=self._reprompt,
+                                         is_error=self._stderr)
+            self._wroteout = True
+            self.write(self.buffer)
+        elif self._reprompt:
+            pythonaddins._WriteStringToPythonWindow(u"",
+                                         reprompt_when_done=True,
+                                         is_error=self._stderr)
+    @property
+    def printed(self):
         return self._wroteout
     def __getattr__(self, attrname):
         if attrname not in ('write', 'finalize'):
-            return getattr(self._original, attrname)
+            return getattr(self._wrapped_stream, attrname)
 
 class StreamWrapperContextManager(object):
     def __enter__(self):
@@ -57,7 +68,13 @@ class StreamWrapperContextManager(object):
         sys.stderr = StreamWrapper(sys.stderr, True)
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout.finalize()
-        sys.stderr.finalize(sys.stdout or sys.stderr)
+        sys.stderr.finalize()
+        printed = (getattr(sys.stdout, 'printed', False) or
+                   getattr(sys.stderr, 'printed', False))
+        # Reprompt if anything had printed out
+        if printed:
+            pythonaddins._WriteStringToPythonWindow(u"",
+                                                    reprompt_when_done=True)
         sys.stdout = self._stdout
         sys.stderr = self._stderr
 
