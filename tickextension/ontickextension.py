@@ -1,7 +1,7 @@
 # coding: utf-8
 __all__ = ['TickExtension']
 
-import tickextension.call_later
+import call_later
 
 class TickExtension(object):
     """An inheritable class for Python Add-In Extensions that will call
@@ -15,12 +15,12 @@ class TickExtension(object):
         self.startTimer()
     def startTimer(self):
         if getattr(self, 'interval', None):
-            tickextension.call_later.call_later(self._tick, self.interval)
+            call_later.call_later(self._tick, self.interval)
         else:
-            tickextension.call_later.cancel_call(self._tick)
+            call_later.cancel_call(self._tick)
     def _tick(self):
         try:
             self.onTimer()
         finally:
             if getattr(self, 'enabled', False) and getattr(self, 'interval', None):
-                tickextension.call_later.call_later(self._tick, self.interval)
+                call_later.call_later(self._tick, self.interval)
