@@ -42,8 +42,14 @@ class StreamWrapper(object):
     def finalize(self, reprompt=False):
         self._reprompt = reprompt
         if self._buffer or reprompt:
-            self.write('\n')
-    def __bool__(self):
+            if self._buffer:
+                pythonaddins._WriteStringToPythonWindow(self._buffer,
+                                             reprompt_when_done=self._reprompt,
+                                             is_error=self._stderr)
+                self._buffer = u""
+                self._wroteout = True
+    @property
+    def printed(self):
         return self._wroteout
     def __getattr__(self, attrname):
         if attrname not in ('write', 'finalize'):
@@ -57,7 +63,8 @@ class StreamWrapperContextManager(object):
         sys.stderr = StreamWrapper(sys.stderr, True)
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout.finalize()
-        sys.stderr.finalize(sys.stdout or sys.stderr)
+        sys.stderr.finalize(getattr(sys.stdout, 'printed', False) or
+                            getattr(sys.stderr, 'printed', False))
         sys.stdout = self._stdout
         sys.stderr = self._stderr
 
